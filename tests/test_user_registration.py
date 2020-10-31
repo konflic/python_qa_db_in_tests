@@ -3,14 +3,16 @@ import helpers
 
 from locatros.RegistrationForm import RegistrationForm
 from locatros.UpperMenu import UpperMenu
+from locatros.LoginForm import LoginForm
+from locatros.MyAccountPage import MyAccountPage
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
 @pytest.mark.db
-def test_register_user(browser, db_cursor):
-    db_cursor = db_cursor.cursor()
+def test_register_user(browser, db_connection):
+    db_cursor = db_connection.cursor()
 
     # Open Register Form
     browser.find_element(*UpperMenu.MY_ACCOUNT).click()
@@ -44,10 +46,17 @@ def test_register_user(browser, db_cursor):
     assert  db_cursor.fetchall(), "Did not find ip entry for user with cunstomer_id: {}".format(customer_id)
 
 
-def test_user_restore_passwords(browser, db_cursor):
+@pytest.mark.db
+def test_user_restore_passwords(browser, db_connection):
     # Create user with DB
-    query = 'INSERT INTO oc_customer (customer_group_id, language_id, firstname, lastname, email, telephone, fax, password, salt, custom_field, ip, status, safe, token, code, date_added) VALUES (1, 1, %s, %s, %s, %s, "", %s, "", "", %s, 1, 0, "", "", NOW())'
-    email = helpers.random_email()
-    db_cursor.cursor().execute(query, (helpers.random_string(), helpers.random_string(), email, helpers.random_phone(), helpers.random_string(), helpers.random_phone(),))
-    db_cursor.commit()
-    # TODO: Implement restoring password test
+    user_email = helpers.create_random_user(db_connection)
+    # Open Login Form
+    browser.find_element(*UpperMenu.MY_ACCOUNT).click()
+    browser.find_element(*UpperMenu.LOGIN_LINK).click()
+    WebDriverWait(browser, 3).until(EC.presence_of_element_located(LoginForm.LOGIN_BTN))
+    # Fill in and submit Login
+    browser.find_element(*LoginForm.EMAIL).send_keys(user_email)
+    browser.find_element(*LoginForm.PASSWORD).send_keys("test") # predefined password for test users
+    browser.find_element(*LoginForm.LOGIN_BTN).click()
+    # Verify some element of logged in user
+    WebDriverWait(browser, 3).until(EC.presence_of_element_located(MyAccountPage.EDIT_YOU_ACCOUNT_INFO))

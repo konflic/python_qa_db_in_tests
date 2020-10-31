@@ -38,7 +38,7 @@ def browser(request):
 
 
 @pytest.fixture
-def db_cursor(request):
+def db_connection(request):
     connection = mysql.connector.connect(
         user='bn_opencart',
         password='',
