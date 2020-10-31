@@ -8,6 +8,7 @@ def pytest_addoption(parser):
     parser.addoption("--browser", default="chrome")
     parser.addoption("--maximize", action='store_true')
     parser.addoption("--close", action='store_true')
+    parser.addoption("--base_url", default='http://localhost')
 
 
 @pytest.fixture
@@ -15,11 +16,14 @@ def browser(request):
     browser = request.config.getoption("--browser")
     maximize = request.config.getoption("--maximize")
     close = request.config.getoption("--close")
+    base_url = request.config.getoption("--base_url")
 
     if browser == "chrome":
         driver = webdriver.Chrome()
     elif browser == "firefox":
         driver = webdriver.Firefox()
+    elif browser == "opera":
+        driver = webdriver.Opera()
     else:
         raise ValueError("{} is not supported argument for browser!".format(browser))
 
@@ -29,11 +33,12 @@ def browser(request):
     if maximize:
         driver.maximize_window()
 
+    driver.get(base_url)
     return driver
 
 
 @pytest.fixture
-def db_cursor(request):
+def db_connection(request):
     connection = mysql.connector.connect(
         user='bn_opencart',
         password='',
@@ -42,4 +47,4 @@ def db_cursor(request):
         port='3306'
     )
     request.addfinalizer(connection.close)
-    return connection.cursor()
+    return connection
