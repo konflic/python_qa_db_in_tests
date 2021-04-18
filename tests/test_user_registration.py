@@ -2,7 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-BASE_URL = "http://localhost"
+BASE_URL = "http://192.168.1.89"
 MY_ACCOUNT = (By.XPATH, "//a[@title='My Account']")
 REGISTER_LINK = (By.XPATH, "//ul//a[text()='Register']")
 REGISTER_FORM_HEADER = (By.XPATH, "//h1[text()='Register Account']")

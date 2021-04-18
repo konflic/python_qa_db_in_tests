@@ -1,3 +1,4 @@
+import os
 import pytest
 import mysql.connector
 
@@ -17,9 +18,9 @@ def browser(request):
     close = request.config.getoption("--close")
 
     if browser == "chrome":
-        driver = webdriver.Chrome()
+        driver = webdriver.Chrome(executable_path=os.path.expanduser("~/Downloads/drivers/chromedriver"))
     elif browser == "firefox":
-        driver = webdriver.Firefox()
+        driver = webdriver.Firefox(executable_path=os.path.expanduser("~/Downloads/drivers/geckodriver"))
     else:
         raise ValueError("{} is not supported argument for browser!".format(browser))
 
