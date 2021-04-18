@@ -1,0 +1,16 @@
+from selenium.webdriver.common.by import By
+
+MY_ACCOUNT = (By.XPATH, "//a[@title='My Account']")
+REGISTER_LINK = (By.XPATH, "//ul//a[text()='Register']")
+REGISTER_FORM_HEADER = (By.XPATH, "//h1[text()='Register Account']")
+REGISTER_FORM = (By.CSS_SELECTOR, "form.form-horizontal")
+REGISTER_FORM_FIRSTNAME = (By.CSS_SELECTOR, "#input-firstname")
+REGISTER_FORM_LASTNAME = (By.CSS_SELECTOR, "#input-lastname")
+REGISTER_FORM_EMAIL = (By.CSS_SELECTOR, "#input-email")
+REGISTER_FORM_TELEPHONE = (By.CSS_SELECTOR, "#input-telephone")
+REGISTER_FORM_PASSWORD = (By.CSS_SELECTOR, "#input-password")
+REGISTER_FORM_CONFIRM_PASSWORD = (By.CSS_SELECTOR, "#input-confirm")
+REGISTER_FORM_AGREE_POLICY = (By.CSS_SELECTOR, "input[name='agree']")
+REGISTER_FORM_CONTINUE = (By.CSS_SELECTOR, "input[value='Continue']")
+SUCCESS_REGISTER_HEADER = (By.XPATH, "//h1[text()='Your Account Has Been Created!']")
+CONTINUE_TO_ACCOUNT = (By.XPATH, "//div[class='buttons']//a[text()='Continue']")

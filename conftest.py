@@ -2,7 +2,14 @@ import os
 import pytest
 import mysql.connector
 
+from locators import *
+from helpers import random_email, random_phone, random_string
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 from selenium import webdriver
+
+BASE_URL = "http://192.168.1.89"
 
 
 def pytest_addoption(parser):
@@ -25,16 +32,17 @@ def browser(request):
         raise ValueError("{} is not supported argument for browser!".format(browser))
 
     if close:
-        request.addfinalizer(driver.close)
+        request.addfinalizer(driver.quit)
 
     if maximize:
         driver.maximize_window()
 
+    driver.get(BASE_URL)
     return driver
 
 
-@pytest.fixture
-def db_cursor(request):
+@pytest.fixture(scope="session")
+def db_con(request):
     connection = mysql.connector.connect(
         user='bn_opencart',
         password='',
@@ -43,4 +51,25 @@ def db_cursor(request):
         port='3306'
     )
     request.addfinalizer(connection.close)
-    return connection.cursor()
+    return connection
+
+
+@pytest.fixture
+def new_customer(browser, db_con):
+    # Open Register Form
+    browser.find_element(*MY_ACCOUNT).click()
+    browser.find_element(*REGISTER_LINK).click()
+    WebDriverWait(browser, 3).until(EC.presence_of_element_located(REGISTER_FORM))
+    email = random_email()
+
+    # Fill register form and submit
+    browser.find_element(*REGISTER_FORM_FIRSTNAME).send_keys("test_" + random_string(5))
+    browser.find_element(*REGISTER_FORM_LASTNAME).send_keys("test_" + random_string(5))
+    browser.find_element(*REGISTER_FORM_EMAIL).send_keys(email)
+    browser.find_element(*REGISTER_FORM_TELEPHONE).send_keys(random_phone())
+    browser.find_element(*REGISTER_FORM_PASSWORD).send_keys("12345678")
+    browser.find_element(*REGISTER_FORM_CONFIRM_PASSWORD).send_keys("12345678")
+    browser.find_element(*REGISTER_FORM_AGREE_POLICY).click()
+    browser.find_element(*REGISTER_FORM_CONTINUE).click()
+    WebDriverWait(browser, 3).until(EC.presence_of_element_located(SUCCESS_REGISTER_HEADER))
+    return email
